@@ -8,13 +8,14 @@ import TaskList from './components/TaskList/TaskList';
 //CSS
 import styles from './App.module.css'
 import { ITask } from './interfaces/Task';
+import Modal from './components/Modal/Modal';
 
 function App() {
 
-  //usestate tasklist
-  const [taskList, setTaskList] = useState<ITask[]>([])
 
-  //delete task
+  const [taskList, setTaskList] = useState<ITask[]>([])
+  const [taskToUpdate, setTaskToUpdate] = useState<ITask | null>(null)
+
   const deleteTask = (id: number) => {
     const newTaskList = taskList.filter((task) => {
       //compare id with id task's in list
@@ -23,8 +24,25 @@ function App() {
     setTaskList(newTaskList)
   }
 
+  const hideOrShowModal = (display: boolean) => {
+    const modal = document.querySelector("#modal")
+    if (display) {
+      modal!.classList.remove("hide")//exibe
+    } else {
+      modal!.classList.add("hide")//esconde
+    }
+  }
+
+  const editTask = (task: ITask): void => {
+    hideOrShowModal(true)
+    setTaskToUpdate(task)
+  }
+
   return (
     <div className="App">
+      <Modal
+        children={<TaskForm btnText='Editar tarefa' taskList={taskList} task={taskToUpdate} />}
+      />
       <Header />
       <main className={styles.main}>
         <div>
@@ -33,7 +51,7 @@ function App() {
         </div>
         <div>
           <h2>Suas tarefas</h2>
-          <TaskList taskList={taskList} handleDelete={deleteTask} />
+          <TaskList taskList={taskList} handleDelete={deleteTask} handleEdit={editTask} />
         </div>
       </main>
       <Footer />
